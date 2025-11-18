@@ -1,0 +1,56 @@
+{
+  "name": "ipulse-studio",
+  "version": "1.0.0",
+  "description": "AI-Powered Programmable IP Ecosystem built on Story Protocol",
+  "author": "IPulse Team",
+  "license": "MIT",
+  "keywords": [
+    "blockchain",
+    "story-protocol",
+    "ip",
+    "ai",
+    "nft",
+    "web3",
+    "intellectual-property"
+  ],
+  "workspaces": [
+    "contracts",
+    "sdk",
+    "frontend",
+    "backend",
+    "ai-engine"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:all": "concurrently \"npm:dev:*\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:ai": "cd ai-engine && npm run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "contracts:compile": "cd contracts && npx hardhat compile",
+    "contracts:test": "cd contracts && npx hardhat test",
+    "contracts:deploy": "cd contracts && npx hardhat run scripts/deploy.ts --network story-testnet",
+    "db:migrate": "cd backend && npx prisma migrate dev",
+    "db:studio": "cd backend && npx prisma studio",
+    "sdk:build": "cd sdk && npm run build",
+    "sdk:publish": "cd sdk && npm publish",
+    "prepare": "husky install",
+    "postinstall": "npm run contracts:compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.55.0",
+    "husky": "^8.0.3",
+    "prettier": "^3.1.1",
+    "turbo": "^1.11.2",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
