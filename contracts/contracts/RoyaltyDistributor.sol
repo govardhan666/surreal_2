@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title RoyaltyDistributor
@@ -11,9 +10,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * @notice Handles multi-level royalty splits across derivative work chains
  */
 contract RoyaltyDistributor is ReentrancyGuard, Ownable {
-    using Counters for Counters.Counter;
-
-    Counters.Counter private _distributionIds;
+    uint256 private _distributionIds;
 
     // Royalty split structure
     struct RoyaltySplit {
@@ -96,7 +93,7 @@ contract RoyaltyDistributor is ReentrancyGuard, Ownable {
         uint256 derivativeTokenId
     );
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev Configure royalty splits for an IP asset
@@ -216,8 +213,8 @@ contract RoyaltyDistributor is ReentrancyGuard, Ownable {
 
         require(config.isConfigured, "Royalty not configured");
 
-        _distributionIds.increment();
-        uint256 distributionId = _distributionIds.current();
+        _distributionIds++;
+        uint256 distributionId = _distributionIds;
 
         // Record distribution
         distributions[distributionId] = Distribution({
@@ -310,8 +307,8 @@ contract RoyaltyDistributor is ReentrancyGuard, Ownable {
             }
         }
 
-        _distributionIds.increment();
-        uint256 distributionId = _distributionIds.current();
+        _distributionIds++;
+        uint256 distributionId = _distributionIds;
 
         distributions[distributionId] = Distribution({
             distributionId: distributionId,
@@ -435,7 +432,7 @@ contract RoyaltyDistributor is ReentrancyGuard, Ownable {
      * @dev Get total distributions count
      */
     function getTotalDistributions() external view returns (uint256) {
-        return _distributionIds.current();
+        return _distributionIds;
     }
 
     // Receive function to accept ETH

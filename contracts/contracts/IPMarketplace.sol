@@ -2,9 +2,8 @@
 pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title IPMarketplace
@@ -12,11 +11,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
  * @notice Integrates with Story Protocol for programmable IP licensing
  */
 contract IPMarketplace is ReentrancyGuard, Ownable {
-    using Counters for Counters.Counter;
-
     // Listing counter
-    Counters.Counter private _listingIds;
-    Counters.Counter private _licenseIds;
+    uint256 private _listingIds;
+    uint256 private _licenseIds;
 
     // Marketplace fee (in basis points, 250 = 2.5%)
     uint256 public platformFee = 250;
@@ -93,7 +90,7 @@ contract IPMarketplace is ReentrancyGuard, Ownable {
 
     event FundsWithdrawn(address indexed recipient, uint256 amount);
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev Create a new listing for an IP asset
@@ -115,8 +112,8 @@ contract IPMarketplace is ReentrancyGuard, Ownable {
         bytes32 ipHash = keccak256(abi.encodePacked(ipAsset, tokenId));
         require(!isIPListed[ipHash], "IP already listed");
 
-        _listingIds.increment();
-        uint256 listingId = _listingIds.current();
+        _listingIds++;
+        uint256 listingId = _listingIds;
 
         listings[listingId] = Listing({
             listingId: listingId,
@@ -210,8 +207,8 @@ contract IPMarketplace is ReentrancyGuard, Ownable {
         // Calculate royalty percentage based on license type
         uint256 royaltyPercentage = _calculateRoyalty(licenseType);
 
-        _licenseIds.increment();
-        uint256 licenseId = _licenseIds.current();
+        _licenseIds++;
+        uint256 licenseId = _licenseIds;
 
         licenses[licenseId] = License({
             licenseId: licenseId,
@@ -364,14 +361,14 @@ contract IPMarketplace is ReentrancyGuard, Ownable {
      * @dev Get active listings count
      */
     function getActiveListingsCount() external view returns (uint256) {
-        return _listingIds.current();
+        return _listingIds;
     }
 
     /**
      * @dev Get total licenses issued
      */
     function getTotalLicensesIssued() external view returns (uint256) {
-        return _licenseIds.current();
+        return _licenseIds;
     }
 
     // Required for receiving NFTs

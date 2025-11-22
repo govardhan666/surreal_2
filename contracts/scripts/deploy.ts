@@ -11,31 +11,38 @@ async function main() {
   console.log("📦 Deploying IPMarketplace...");
   const IPMarketplace = await ethers.getContractFactory("IPMarketplace");
   const marketplace = await IPMarketplace.deploy();
-  await marketplace.deployed();
-  console.log("✅ IPMarketplace deployed to:", marketplace.address);
+  await marketplace.waitForDeployment();
+  const marketplaceAddress = await marketplace.getAddress();
+  console.log("✅ IPMarketplace deployed to:", marketplaceAddress);
 
   // Deploy RoyaltyDistributor
   console.log("\n📦 Deploying RoyaltyDistributor...");
   const RoyaltyDistributor = await ethers.getContractFactory("RoyaltyDistributor");
   const royaltyDistributor = await RoyaltyDistributor.deploy();
-  await royaltyDistributor.deployed();
-  console.log("✅ RoyaltyDistributor deployed to:", royaltyDistributor.address);
+  await royaltyDistributor.waitForDeployment();
+  const royaltyDistributorAddress = await royaltyDistributor.getAddress();
+  console.log("✅ RoyaltyDistributor deployed to:", royaltyDistributorAddress);
 
   // Deploy DerivativeTracker
   console.log("\n📦 Deploying DerivativeTracker...");
   const DerivativeTracker = await ethers.getContractFactory("DerivativeTracker");
   const derivativeTracker = await DerivativeTracker.deploy();
-  await derivativeTracker.deployed();
-  console.log("✅ DerivativeTracker deployed to:", derivativeTracker.address);
+  await derivativeTracker.waitForDeployment();
+  const derivativeTrackerAddress = await derivativeTracker.getAddress();
+  console.log("✅ DerivativeTracker deployed to:", derivativeTrackerAddress);
 
   // Save deployment addresses
+  const network = await ethers.provider.getNetwork();
   const deploymentInfo = {
-    network: await ethers.provider.getNetwork(),
+    network: {
+      name: network.name,
+      chainId: Number(network.chainId),
+    },
     deployer: deployer.address,
     contracts: {
-      IPMarketplace: marketplace.address,
-      RoyaltyDistributor: royaltyDistributor.address,
-      DerivativeTracker: derivativeTracker.address,
+      IPMarketplace: marketplaceAddress,
+      RoyaltyDistributor: royaltyDistributorAddress,
+      DerivativeTracker: derivativeTrackerAddress,
     },
     deployedAt: new Date().toISOString(),
   };

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title DerivativeTracker
@@ -67,7 +67,7 @@ contract DerivativeTracker is Ownable, ReentrancyGuard {
         uint256 weight
     );
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {}
 
     /**
      * @dev Create a new derivative work
